@@ -1,7 +1,7 @@
 #include "polygon.hpp"
 
 
-Poly::Poly(const std::vector<Point>& pts) {
+Poly::Poly(std::vector<Point>& pts) {
     vertices = pts;
 }
 
@@ -11,7 +11,7 @@ bool Poly::is_type(string name) {
     return false;
 }
 
-const std::vector<Point>& Poly::getVertices() {
+std::vector<Point>& Poly::getVertices() {
     return vertices;
 }
 

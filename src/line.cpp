@@ -11,3 +11,11 @@ bool Line::is_type(string name) {
 bool Line::detection(float mx, float my) {
     return true;
 }
+
+Point Line::getp1() {
+    return p1;
+}
+
+Point Line::getp2(){
+    return p2;
+}
