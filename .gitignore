@@ -6,3 +6,5 @@ bin/
 .DS_Store
 *.user
 *.cbp.user
+.vscode/*
+output/*
