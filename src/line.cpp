@@ -31,3 +31,7 @@ list<Point> Line::get_points() {
     list<Point> points = {this->getp1(), this->getp2()};
     return points;
 }
+
+void set_points(list<Point> new_points) {
+    
+}

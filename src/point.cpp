@@ -1,4 +1,5 @@
 #include "point.hpp"
+#include <list>
 
 Point::Point(float largura, float altura): x(largura), y(altura){}
 
@@ -26,4 +27,16 @@ void Point::setY(float altura) {
 
 bool Point::detection(float mx, float my) {
     return true;
+}
+
+Point Point::get_center() {
+    return Point(0, 0);
+}
+
+list<Point> Point::get_points() {
+    return list<Point>();
+}
+
+void Point::set_points(list<Point> new_points) {
+    
 }
