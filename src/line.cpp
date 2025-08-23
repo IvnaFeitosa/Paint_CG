@@ -28,10 +28,12 @@ Point Line::get_center() {
 }
     
 list<Point> Line::get_points() {
-    list<Point> points = {this->getp1(), this->getp2()};
-    return points;
+    return list<Point>{this->getp1(), this->getp2()};
 }
 
 void Line::set_points(list<Point> new_points) {
-    
+    for (int i = 0; i < 3; i++) {
+        this->getp1().set(i, new_points.front().get(i));
+        this->getp2().set(i, new_points.back().get(i));
+    }
 }
