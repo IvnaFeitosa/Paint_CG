@@ -31,5 +31,6 @@ list<Poly>& ObjContainer::get_polygons() {
 }
 
 Object* ObjContainer::searchDetections() {
-
+    Object *obj = nullptr;
+    return obj;
 }
