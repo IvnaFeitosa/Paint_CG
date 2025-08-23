@@ -32,6 +32,6 @@ list<Point> Line::get_points() {
     return points;
 }
 
-void set_points(list<Point> new_points) {
+void Line::set_points(list<Point> new_points) {
     
 }

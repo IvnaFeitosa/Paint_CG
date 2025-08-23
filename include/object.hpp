@@ -2,9 +2,10 @@
 #define OBJECT_HPP
 
 #include <string>
-
+#include <list>
 using namespace std;
 
+class Point;
 class ObjContainer;
 
 class Object {
