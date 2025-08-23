@@ -13,6 +13,8 @@ public:
     virtual ~Object() = default; 
     virtual bool detection(float mx, float my) = 0;
     virtual bool is_type(string name) = 0;
+    virtual Point get_center();
+    virtual list<Point> get_points();
 };
 
 #endif

@@ -11,10 +11,13 @@ private:
 
 public:
     Line(Point primeiro, Point segundo);
-    bool is_type(string name) override;
-    bool detection(float mx, float my) override;
     Point getp1();
     Point getp2();
+    bool is_type(string name) override;
+    bool detection(float mx, float my) override;
+    Point get_center() override;
+    list<Point> get_points() override;
+    void set_points(list<Point> new_points) override;
 };
 
 #endif
