@@ -29,3 +29,7 @@ list<Line>& ObjContainer::get_lines() {
 list<Poly>& ObjContainer::get_polygons() {
     return this->polygons;
 }
+
+Object* ObjContainer::searchDetections() {
+
+}
