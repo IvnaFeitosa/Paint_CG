@@ -20,7 +20,7 @@ public:
     void setX(float n_x);
     void setY(float n_y);
     void setH(float n_h);
-    void Point::set(int i, float value);
+    void set(int i, float value);
     bool is_type(string name) override;
     bool detection(float mx, float my) override;
     Point get_center() override;

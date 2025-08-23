@@ -20,7 +20,7 @@ bool aguardandoPrimeiroClique = false;
 Point primeiroPontoLinha(0, 0);
 
 //vetor para armazenar pontos do poligono durante modo criação
-std::vector<Point> verticesPoly;
+list<Point> verticesPoly;
 
 //função para registrar 
 void capturarTeclaPressionada(unsigned char key, int x, int y){

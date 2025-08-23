@@ -3,6 +3,9 @@
 #include "polygon.hpp"
 #include "line.hpp"
 
+Operation Transform::matrix;
+list<Operation> Transform::operations;
+
 Transform::Transform() {
     load_identity();
     operations.clear();
