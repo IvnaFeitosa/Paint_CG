@@ -31,7 +31,7 @@ void Transform::multiply(Operation operation) {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
-                temp[i][j] += operation[i][k] * matrix[k][j];
+                temp[i][j] += matrix[i][k] * operation[k][j];
             }
         }
     }
@@ -87,16 +87,18 @@ void Transform::rotate(float angle, Point center) {
     translade(center.getX(), center.getY());
 }
 
-void Transform::reflect(bool rx, bool ry) {
+void Transform::reflect(bool rx, bool ry, Point center) {
     float sx = rx ? -1.0f : 1.0f;
     float sy = ry ? -1.0f : 1.0f;
 
+    translade(-center.getX(), -center.getY());
     Operation mat_reflect = {
         {{sx, 0, 0},
         {0, sy, 0},
         {0, 0, 1}}
     };
     add_operation(mat_reflect);
+    translade(center.getX(), center.getY());
 }
 
 void Transform::shear_x(float shx, Point center) {

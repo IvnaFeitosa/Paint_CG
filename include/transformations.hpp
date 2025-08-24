@@ -26,7 +26,7 @@ public:
     static void translade(float tx, float ty);
     static void scale(float sx, float sy, Point center);
     static void rotate(float angle, Point center);
-    static void reflect(bool rx, bool ry);
+    static void reflect(bool rx, bool ry, Point center);
     static void shear_x(float shx, Point center);
     static void shear_y(float shy, Point center);
     static void aply_transformations(Object *obj);

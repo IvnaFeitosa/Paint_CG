@@ -132,40 +132,36 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
 
     if(objetoSelecionado != nullptr){
         switch(key){
-            case 't': 
-                Transform::translade(50, 30);
-                Transform::aply_transformations(objetoSelecionado);
-                printf("Transladação aplicada\n");
-                break;
             case 'r': 
-                Transform::rotate(45, Point(0,0));
+                Transform::rotate(1, objetoSelecionado->get_center());
                 Transform::aply_transformations(objetoSelecionado);
-                printf("Rotação aplicada\n");
                 break;
-            case 's': 
-                Transform::scale(2, 2, Point(0,0));
+            case 't': 
+                Transform::rotate(-1, objetoSelecionado->get_center());
                 Transform::aply_transformations(objetoSelecionado);
-                printf("Escala aplicada\n");
+                break;
+            case 'f': 
+                Transform::scale(1.1, 1.1, objetoSelecionado->get_center());
+                Transform::aply_transformations(objetoSelecionado);
+                break;
+            case 'g': 
+                Transform::scale(.9, .9, objetoSelecionado->get_center());
+                Transform::aply_transformations(objetoSelecionado);
+                break;
+            case 'z': 
+                Transform::reflect(true, false, objetoSelecionado->get_center());
+                Transform::aply_transformations(objetoSelecionado);
                 break;
             case 'x': 
-                Transform::reflect(true, false);
+                Transform::reflect(false, true, objetoSelecionado->get_center());
                 Transform::aply_transformations(objetoSelecionado);
-                printf("Reflexão em X aplicada\n");
-                break;
-            case 'y': 
-                Transform::reflect(false, true);
-                Transform::aply_transformations(objetoSelecionado);
-                printf("Reflexão em Y aplicada\n");
                 break;
             case 'h': 
-                Transform::shear_x(1.0f, Point(0,0));
+                Transform::shear_x(1.0f, objetoSelecionado->get_center());
                 Transform::aply_transformations(objetoSelecionado);
-                printf("Shear em X aplicado\n");
                 break;
-            case 'v': 
-                Transform::shear_y(1.0f, Point(0,0));
-                Transform::aply_transformations(objetoSelecionado);
-                printf("Shear em Y aplicado\n");
+            case 'j': 
+                Transform::shear_y(1.0f, objetoSelecionado->get_center());
                 break;
         }
         glutPostRedisplay();
