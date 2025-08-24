@@ -1,5 +1,12 @@
 #include <GL/freeglut.h>
 #include "obj_container.hpp"
+#include "saveLoad.hpp"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include <filesystem>
 
 void init(void);
 void display(void);
@@ -22,11 +29,11 @@ Point primeiroPontoLinha(0, 0);
 //vetor para armazenar pontos do poligono durante modo criação
 std::vector<Point> verticesPoly;
 
-//função para registrar 
 void capturarTeclaPressionada(unsigned char key, int x, int y){
 
     //se não tiver sido selecionado nenhum modo ou um modo for finalizado com enter
     if(modoAtual == nenhum){
+
         if(key=='1'){
             modoAtual = modoCriacaoPonto;
             printf("modo de criacao de ponto ativado");
@@ -36,6 +43,12 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         }else if(key=='3'){
             modoAtual = modoCriacaoPoligono;
             printf("modo de criacao de poligono ativado");
+        }else if(key == 's'){
+            printf("entrando em modo de salvamento de arquivo \n");
+            salvarObjetos2D();
+        }else if(key == 'l'){
+            printf("entrando em modo de carregamento de arquivo \n");
+            carregarObjetos2D();
         }
 
     //se em qualquer modo
@@ -108,7 +121,7 @@ void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
 
         glutPostRedisplay();
     }
-};
+}
 
 void init(void) {
 
