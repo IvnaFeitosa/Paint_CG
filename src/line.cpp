@@ -33,7 +33,7 @@ list<Point> Line::get_points() {
 
 void Line::set_points(list<Point> new_points) {
     for (int i = 0; i < 3; i++) {
-        this->getp1().set(i, new_points.front().get(i));
-        this->getp2().set(i, new_points.back().get(i));
+        this->p1.set(i, new_points.front().get(i));
+        this->p2.set(i, new_points.back().get(i));
     }
 }

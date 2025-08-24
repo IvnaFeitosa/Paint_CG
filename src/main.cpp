@@ -1,9 +1,13 @@
 #include <GL/freeglut.h>
 #include "obj_container.hpp"
+#include "transformations.hpp"
 
 void init(void);
 void display(void);
 void capturarCliqueMouse(int button, int state, int x, int y);
+void capturarTeclaPressionada(unsigned char key, int x, int y);
+Point get_mouse_point(int mousex, int mousey);
+void capturarMovimentoMouse(int mousex, int mousey);
 
 ObjContainer obj_container = ObjContainer();
 
@@ -15,6 +19,10 @@ const int modoCriacaoPoligono = 3;
 
 int modoAtual = nenhum;
 
+bool dragging = false;
+Object* selected = nullptr;
+float startX, startY;
+
 //variável contadora para 2 cliques esperados de linha
 bool aguardandoPrimeiroClique = false;
 Point primeiroPontoLinha(0, 0);
@@ -22,96 +30,127 @@ Point primeiroPontoLinha(0, 0);
 //vetor para armazenar pontos do poligono durante modo criação
 list<Point> verticesPoly;
 
-//função para registrar 
-void capturarTeclaPressionada(unsigned char key, int x, int y){
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(250, 50);
+    glutCreateWindow("Paint_CG");
 
+    init();
+
+    glutDisplayFunc(display);
+
+    glutKeyboardFunc(capturarTeclaPressionada);
+    glutMouseFunc(capturarCliqueMouse);
+    glutMotionFunc(capturarMovimentoMouse);
+
+    // força redesenho logo que a janela abre
+    glutPostRedisplay();
+
+    glutMainLoop();
+    return 0;
+}
+
+//função para registrar 
+void capturarTeclaPressionada(unsigned char key, int x, int y) {
     //se não tiver sido selecionado nenhum modo ou um modo for finalizado com enter
-    if(modoAtual == nenhum){
-        if(key=='1'){
+    if (modoAtual == nenhum) {
+        if (key=='1') {
             modoAtual = modoCriacaoPonto;
             printf("modo de criacao de ponto ativado");
-        }else if(key=='2'){
+        } else if (key=='2') {
             modoAtual = modoCriacaoLinha;
             printf("modo de criacao de linha ativado \n");
-        }else if(key=='3'){
+        } else if (key=='3') {
             modoAtual = modoCriacaoPoligono;
             printf("modo de criacao de poligono ativado");
         }
-
     //se em qualquer modo
     //13 = tecla ENTER
-    }else{
-        if(key==13){
-
-            if(modoAtual == modoCriacaoPoligono){
-
+    } else {
+        if (key==13) {
+            if (modoAtual == modoCriacaoPoligono) {
                 //montando poligono após a criação de todos os seus pontos
                 obj_container.addPoly(Poly(verticesPoly));
-
                 //limpando vetor temporário de pontos para o próximo poligono
                 verticesPoly.clear();
-
             }
-
             printf("\nretornando ao modo padrao\n");
             modoAtual = nenhum;
         }
     }
+}
 
-};
+Point get_mouse_point(int mousex, int mousey) {
+    float largura = (float) glutGet(GLUT_WINDOW_WIDTH);
+    float altura  = (float) glutGet(GLUT_WINDOW_HEIGHT);
+
+    float x = ((float) mousex / largura) * 800.0f;
+    float y = ((altura - (float) mousey) / altura) * 600.0f;
+
+    return Point(x, y);
+}
 
 void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
+    Point mouse_pos;
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        mouse_pos = get_mouse_point(mousex, mousey);
 
-    if(button==GLUT_LEFT_BUTTON && state==GLUT_DOWN){
-
-        //sistema de coord da janela e da projeção são diferentes
-        //janela: (0,0) no canto superior esquerdo; projeção: (0,0) no canto inferior esquerdo
-
-        float largura = (float)glutGet(GLUT_WINDOW_WIDTH);
-        float altura  = (float)glutGet(GLUT_WINDOW_HEIGHT);
-
-        //para converter calculamos a razão da coord do mouse pela medida da projeção e multiplicamos
-        //o resultado pela última
-
-        float x = ((float)mousex/largura)*800.0f;
-        float y = ((altura-(float)mousey)/altura)*600.0f;
-
-        if(modoAtual == modoCriacaoPonto){
-
-            obj_container.addPoint(Point(x, y));
+        if (modoAtual == modoCriacaoPonto) {
+            obj_container.addPoint(mouse_pos);
             glutPostRedisplay();
-
-        }else if(modoAtual == modoCriacaoLinha){
-
-            if(aguardandoPrimeiroClique == false){
-
-                primeiroPontoLinha.setX(x);
-                primeiroPontoLinha.setY(y);
-                aguardandoPrimeiroClique = true;
-                
-            }else{
-
-                Point segundoPonto(x, y);
+        } else if(modoAtual == modoCriacaoLinha) {
+            if (aguardandoPrimeiroClique == false) {
+                primeiroPontoLinha.setX(mouse_pos.getX());
+                primeiroPontoLinha.setY(mouse_pos.getY());
+                aguardandoPrimeiroClique = true; 
+            } else {
+                Point segundoPonto(mouse_pos.getX(), mouse_pos.getY());
                 Line linha(primeiroPontoLinha, segundoPonto);
                 obj_container.addLine(linha);
 
                 aguardandoPrimeiroClique = false;
-
             }
-
-
-        }else if(modoAtual == modoCriacaoPoligono){
-
-            verticesPoly.push_back(Point(x, y));
-            
+        } else if (modoAtual == modoCriacaoPoligono) {
+            verticesPoly.push_back(mouse_pos);
+        } else {
+            selected = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
+            printf("Selected\n");
+            if (selected) {
+                dragging = true;
+                startX = mouse_pos.getX();
+                startY = mouse_pos.getY();
+            }
         }
 
         glutPostRedisplay();
+    } else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && dragging) {
+        dragging = false;
+        selected = nullptr;
+        printf("Soltei\n");
     }
-};
+}
+
+void capturarMovimentoMouse(int mousex, int mousey) {
+    if (dragging && selected) {
+        Point mouse_pos = get_mouse_point(mousex, mousey);
+
+        float dx = mouse_pos.getX() - startX;
+        float dy = mouse_pos.getY() - startY;
+
+        Transform::translade(dx, dy);
+        Transform::aply_transformations(selected);
+
+        // Atualiza referência pro próximo delta
+        startX = mouse_pos.getX();
+        startY = mouse_pos.getY();
+
+        glutPostRedisplay();
+    }
+}
 
 void init(void) {
-
     //definindo cor de fundo como branco
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glMatrixMode(GL_PROJECTION);
@@ -121,7 +160,6 @@ void init(void) {
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
-
 
     glColor3f(0.0, 0.0, 0.0);
     glPointSize(5.0);
@@ -162,25 +200,4 @@ void display(void) {
     glFlush();
     //trocando buffers
     glutSwapBuffers();
-}
-
-int main(int argc, char** argv) {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(800, 600);
-    glutInitWindowPosition(250, 50);
-    glutCreateWindow("Paint_CG");
-
-    init();
-
-    glutDisplayFunc(display);
-
-    glutKeyboardFunc(capturarTeclaPressionada);
-    glutMouseFunc(capturarCliqueMouse);
-
-    // força redesenho logo que a janela abre
-    glutPostRedisplay();
-
-    glutMainLoop();
-    return 0;
 }

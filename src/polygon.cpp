@@ -39,11 +39,15 @@ list<Point> Poly::get_points() {
 }
 
 void Poly::set_points(list<Point> new_points) {
-    auto it = verticies.begin();
-    for (Point new_p: new_points) {
-        for (int i = 0; i < 3; i++)
-            it->set(i, new_p.get(i));
-        it++;
+    verticies.clear();
+    verticies.assign(new_points.begin(), new_points.end());
+
+    float x_sum = 0, y_sum = 0;
+    for (auto &p : verticies) {
+        x_sum += p.getX();
+        y_sum += p.getY();
     }
+    center.setX(x_sum / verticies.size());
+    center.setY(y_sum / verticies.size());
 }
 

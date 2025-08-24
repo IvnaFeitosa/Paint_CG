@@ -3,7 +3,11 @@
 #include "polygon.hpp"
 #include "line.hpp"
 
-Operation Transform::matrix;
+Operation Transform::matrix = {{
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1}
+}};;
 list<Operation> Transform::operations;
 
 Transform::Transform() {
@@ -16,7 +20,12 @@ void Transform::add_operation(Operation new_matrix) {
 }
 
 void Transform::multiply(Operation operation) {
-    Operation temp;
+    Operation temp = {{
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0}
+    }};
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
@@ -33,11 +42,11 @@ void Transform::multiply(Operation operation) {
 }
 
 void Transform::load_identity() {
-    matrix = {
-        {{1, 0, 0},
+    matrix = {{
+        {1, 0, 0},
         {0, 1, 0},
-        {0, 0, 1}}
-    };
+        {0, 0, 1}
+    }};
 }
 
 void Transform::translade(float tx, float ty) {
@@ -96,7 +105,7 @@ void Transform::shear_x(float shx, Point center) {
         {0, 0, 1}}
     };
     add_operation(mat_shear);
-    translade(-center.getX(), -center.getY());
+    translade(center.getX(), center.getY());
 }
 
 void Transform::shear_y(float shy, Point center) {
@@ -107,7 +116,7 @@ void Transform::shear_y(float shy, Point center) {
         {0, 0, 1}}
     };
     add_operation(mat_shear);
-    translade(-center.getX(), -center.getY());
+    translade(center.getX(), center.getY());
 }
 
 void Transform::aply_transformations(Object *obj) {
@@ -125,7 +134,7 @@ void Transform::aply_transformations(Object *obj) {
 }
 
 void Transform::aply_to_points(list<Point>& points) {
-    for(Point p: points) {
+    for (Point &p: points) {
         float res[3];
 
         for (int i = 0; i < 3; i++)
