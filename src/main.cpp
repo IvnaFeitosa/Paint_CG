@@ -129,6 +129,7 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             if (modoAtual == modoCriacaoPoligono) {
                 //montando poligono após a criação de todos os seus pontos
                 obj_container.addPoly(Poly(verticesPoly));
+                glutPostRedisplay();
                 verticesPoly.clear();
             }
             printf("retornando ao modo padrao\n");
