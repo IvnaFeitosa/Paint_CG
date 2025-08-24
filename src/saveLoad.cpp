@@ -51,7 +51,7 @@ void salvarObjetos2D(){
 
         arquivoSave << "POLIGONO:";
 
-        for(auto &vertice : poly.getVertices()){
+        for(auto &vertice : poly.get_verticies()){
             arquivoSave << vertice.getX() << "," << vertice.getY() << ";";
         }
 
@@ -160,7 +160,7 @@ void carregarObjetos2D(){
                     std::string vertices;
 
                     //vetor de tipo Point para armazenada coordenada tratada
-                    std::vector<Point> verticesLoad;
+                    std::list<Point> verticesLoad;
 
                     //enquanto houver conjunto de coordenadas separadas por ;
                     while(std::getline(conteudo, vertices, ';')){

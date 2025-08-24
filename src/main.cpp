@@ -72,7 +72,13 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             printf("modo de criacao de linha ativado \n");
         } else if (key=='3') {
             modoAtual = modoCriacaoPoligono;
-            printf("modo de criacao de poligono ativado");
+            printf("modo de criacao de poligono ativado\n");
+        }else if(key == 's'){
+            printf("entrando em modo de salvamento de arquivo \n");
+            salvarObjetos2D();
+        }else if(key == 'l'){
+            printf("entrando em modo de carregamento de arquivo \n");
+            carregarObjetos2D();
         }
 
     //se em qualquer modo
