@@ -10,13 +10,12 @@
 #include "object.hpp"
 #include "obj_container.hpp"
 
-extern ObjContainer obj_container; 
+#define NOME_ARQUIVO "savefile.txt"
+#define PASTA ""
 
-void salvarObjetos2D(){
+void salvarObjetos2D(ObjContainer &obj_container) {
 
-    std::string nomeArquivo;
-    std::cout << "digite o nome do arquivo: ";
-    std::cin >> nomeArquivo;
+    std::string nomeArquivo = NOME_ARQUIVO;
 
     //adicionando extensão .txt ao arquivo em caso de não informado pelo user
     if (nomeArquivo.find(".txt") == std::string::npos){
@@ -24,13 +23,12 @@ void salvarObjetos2D(){
     }
 
     //definindo local de salvamento do arquivo
-    std::string pastaDestino = "saves/";
-    std::string caminho = pastaDestino + nomeArquivo;
+    std::string caminho = PASTA + nomeArquivo;
     
     //criando arquivo
     std::ofstream arquivoSave(caminho);
 
-    if(!arquivoSave.is_open()){
+    if (!arquivoSave.is_open()) {
         std::cerr << "Erro: não foi possível criar o arquivo " << caminho << "\n";
     }
 
@@ -60,23 +58,20 @@ void salvarObjetos2D(){
     std::cout << nomeArquivo << " salvo com sucesso!\n";
 }
 
-void carregarObjetos2D(){
+void carregarObjetos2D(ObjContainer &obj_container) {
 
     //escolha do usuário do arquivo de carregamento
-    std::string arquivoEscolhido = "";
-    std::string pastaDestino = "saves/";
+    std::string arquivoEscolhido = NOME_ARQUIVO;
+    std::string pastaDestino = PASTA;
 
     std::string arquivoSelecionado;
-
-    std::cout << "digite o nome de um arquivo da pasta saves que deseja carregar: ";
-    std::cin >> arquivoSelecionado;
 
     //adicionando extensão .txt ao arquivo em caso de não informado pelo user
     if (arquivoSelecionado.find(".txt") == std::string::npos){
         arquivoSelecionado += ".txt";
     }
 
-    arquivoEscolhido = pastaDestino + arquivoSelecionado;
+    arquivoEscolhido = pastaDestino + arquivoEscolhido;
 
     //abrindo arquivo escolhido pelo usuário
     std::ifstream arquivo(arquivoEscolhido);

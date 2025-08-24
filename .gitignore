@@ -8,3 +8,4 @@ bin/
 *.cbp.user
 .vscode/*
 output/*
+savefile.txt

@@ -133,10 +133,10 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             printf("modo de criacao de poligono ativado\n");
         } else if (key == 's'){
             printf("entrando em modo de salvamento de arquivo \n");
-            salvarObjetos2D();
+            salvarObjetos2D(obj_container);
         } else if (key == 'l'){
             printf("entrando em modo de carregamento de arquivo \n");
-            carregarObjetos2D();
+            carregarObjetos2D(obj_container);
         } else if ((key == 127 || key == 8) && objetoSelecionado) { // 127 = Delete, 8 = Backspace
             obj_container.search_for_deletion(objetoSelecionado);
             objetoSelecionado = nullptr;
