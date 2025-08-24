@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#define M_PI 3.14159265358979323846
 typedef array<array<float, 3>, 3> Operation;
 
 class Transform {

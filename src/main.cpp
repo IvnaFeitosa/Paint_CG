@@ -5,6 +5,7 @@
 #include "obj_container.hpp"
 #include "saveLoad.hpp"
 #include "transformations.hpp"
+#include "animation.hpp"
 
 void init(void);
 void display(void);
@@ -13,6 +14,7 @@ void capturarTeclaPressionada(unsigned char key, int x, int y);
 void capturarTeclaEspecialPressionada(int key, int x, int y);
 Point get_mouse_point(int mousex, int mousey);
 void capturarMovimentoMouse(int mousex, int mousey);
+void animation_pacman(int value);
 
 ObjContainer obj_container = ObjContainer();
 
@@ -65,13 +67,18 @@ void init(void) {
 
 
 void display(void) {
+    if (is_animation_playing)
+        return display_animation();
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     glPointSize(5.0);
     float r, g, b;
 
+    ObjContainer* draw_container = &obj_container;
+        
     glBegin(GL_POINTS);
-    for (auto &p : obj_container.get_points()) {
+    for (auto &p : draw_container->get_points()) {
         p.get_color(r, g, b);
         glColor3f(r, g, b);
         glVertex2f(p.getX(), p.getY());
@@ -80,7 +87,7 @@ void display(void) {
 
 
     glBegin(GL_LINES);
-    for(auto &linha: obj_container.get_lines()){
+    for(auto &linha: draw_container->get_lines()){
         linha.get_color(r, g, b);
         glColor3f(r, g, b);
         glVertex2f(linha.getp1().getX(), linha.getp1().getY());
@@ -97,7 +104,7 @@ void display(void) {
     glEnd();
 
  
-    for (auto &poly : obj_container.get_polygons()) {
+    for (auto &poly : draw_container->get_polygons()) {
         poly.get_color(r, g, b);
         glColor3f(r, g, b);
         glBegin(GL_POLYGON);
@@ -112,6 +119,8 @@ void display(void) {
 }
 
 void capturarTeclaPressionada(unsigned char key, int x, int y){
+    if (is_animation_playing) return;
+
     if (modoAtual == nenhum){
         if(key=='1'){
             modoAtual = modoCriacaoPonto;
@@ -132,6 +141,9 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             obj_container.search_for_deletion(objetoSelecionado);
             objetoSelecionado = nullptr;
             glutPostRedisplay();
+        } else if (key == 'a') {
+            is_animation_playing = true;
+            animation_pacman(0);
         } else {
             if (objetoSelecionado) {
                 switch(key) {
@@ -214,6 +226,7 @@ Point get_mouse_point(int mousex, int mousey) {
 
 
 void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
+    if (is_animation_playing) return;
     ultimoMouseX = mousex;
     ultimoMouseY = mousey;
 
@@ -271,5 +284,18 @@ void capturarMovimentoMouse(int mousex, int mousey) {
         startY = mouse_pos.getY();
 
         glutPostRedisplay();
+    }
+}
+
+void animation_pacman(int value) {
+
+    movimentarPac(value);
+
+    glutPostRedisplay();
+    if (pacx < 850)
+        glutTimerFunc(30, animation_pacman, 0);
+    else {
+        is_animation_playing = false;
+        reset();
     }
 }
