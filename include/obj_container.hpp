@@ -23,7 +23,7 @@ public:
     list<Line>& get_lines();
     list<Poly>& get_polygons();
 
-    Object* searchDetections();
+    Object* search_detection(float mx, float my);
 };
 
 #endif
