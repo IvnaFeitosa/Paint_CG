@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 }
 
 void capturarTeclaPressionada(unsigned char key, int x, int y){
-    if(modoAtual == nenhum){
+    if (modoAtual == nenhum){
         if(key=='1'){
             modoAtual = modoCriacaoPonto;
             printf("modo de criacao de ponto ativado\n");
@@ -117,6 +117,8 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
                         Transform::shear_y(-.5f, objetoSelecionado->get_center());
                         Transform::aply_transformations(objetoSelecionado);
                         break;
+                    case 'n':
+                        objetoSelecionado->next_color();
                 }
                 glutPostRedisplay();
             }
@@ -225,11 +227,13 @@ void init(void) {
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(0.0, 0.0, 0.0);
     glPointSize(5.0);
+    float r, g, b;
 
     glBegin(GL_POINTS);
     for (auto &p : obj_container.get_points()) {
+        p.get_color(r, g, b);
+        glColor3f(r, g, b);
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
@@ -237,6 +241,8 @@ void display(void) {
 
     glBegin(GL_LINES);
     for(auto &linha: obj_container.get_lines()){
+        linha.get_color(r, g, b);
+        glColor3f(r, g, b);
         glVertex2f(linha.getp1().getX(), linha.getp1().getY());
         glVertex2f(linha.getp2().getX(), linha.getp2().getY());
     }
@@ -245,13 +251,15 @@ void display(void) {
 
     glBegin(GL_POINTS);
     for (auto &p : verticesPoly) {
+        glColor3f(0.0f, 0.0f, 0.0f);
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
 
  
-    glColor3f(0.0f, 0.0f, 0.0f);
     for (auto &poly : obj_container.get_polygons()) {
+        poly.get_color(r, g, b);
+        glColor3f(r, g, b);
         glBegin(GL_POLYGON);
         for (auto &vertice : poly.get_verticies()) {
             glVertex2f(vertice.getX(), vertice.getY());

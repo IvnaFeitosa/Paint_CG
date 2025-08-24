@@ -3,7 +3,10 @@
 
 #include <string>
 #include <list>
+#include <array>
 using namespace std;
+
+typedef std::array<std::array<float, 3>, 11> ColorPalet;
 
 class Point;
 class ObjContainer;
@@ -11,8 +14,11 @@ class ObjContainer;
 class Object {
 private:
     static unsigned int id_gen;
+    static ColorPalet colors;
     unsigned int id;
-    
+    int color_id;
+    float color[3];
+
 public:
     
     Object();
@@ -23,6 +29,8 @@ public:
     virtual list<Point> get_points() = 0;
     virtual void set_points(list<Point> new_points) = 0;
     unsigned int get_id();
+    void get_color(float &r, float &g, float &b);
+    void next_color();
     bool equals(Object* obj);
 };
 
