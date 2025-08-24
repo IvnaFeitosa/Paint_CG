@@ -221,7 +221,6 @@ void display(void) {
     glColor3f(0.0, 0.0, 0.0);
     glPointSize(5.0);
 
-
     glBegin(GL_POINTS);
     for (auto &p : obj_container.get_points()) {
         glVertex2f(p.getX(), p.getY());
