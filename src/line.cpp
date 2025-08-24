@@ -10,7 +10,42 @@ bool Line::is_type(string name) {
 }
 
 bool Line::detection(float mx, float my) {
-    return true;
+    int t=5; // tolerância
+    float px1 = this->p1.getX(), px2 = this->p2.getX(), py1 = this->p1.getY(), py2 = this->p2.getY();//Cordenadas dos pontos da linha
+    
+    for(int i = 0; i<4; i++){
+
+        if(((px1<mx-t and px2<mx-t) or (px1>mx+t and px2>mx+t)) and ((py1<my-t and py2<my-t) or (py1>my+t and py2>my+t))){
+            return false;
+        }
+        else if (((px1 >= mx-t and px1 <= mx) and (py1 >= my-t and py1 <= my+t)) or ((px2 >= mx-t and px2 <= mx) and (py2 >= my-t and py2 <= my+t))){
+            return true;
+        }
+        else{
+            if (px1 < mx-t){
+                if (px2-px1) py1 += (mx-t - px1)*(py2-py1)/(px2-px1);
+                px1 = mx-t;
+
+            }
+            else if (px1 > mx+t){
+                if (px2-px1) py1 += (mx+t - px1)*(py2-py1)/(px2-px1);
+                px1 = mx+t;
+                
+            }
+            else if(py1 < my-t){
+                if (py2-py1)px1 += (my-t - py1)*(px2-px1)/(py2-py1);
+                py1 = my-t;
+            }
+            else if(py1 > my+t){
+                if (py2-py1) px1 += (my+t - py1)*(px2-px1)/(py2-py1);
+                py1 = my+t;
+            }
+            else{
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 Point Line::getp1() {

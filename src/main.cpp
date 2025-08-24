@@ -238,6 +238,7 @@ void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
         }else if(modoAtual == modoCriacaoPoligono){
             verticesPoly.push_back(mouse_pos);
         } else {
+
             objetoSelecionado = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
  
             if (objetoSelecionado) {

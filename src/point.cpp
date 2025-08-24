@@ -65,7 +65,11 @@ void Point::set(int i, float value) {
 }
 
 bool Point::detection(float mx, float my) {
-    return true;
+    int t = 5;
+    if (mx > this->x-t and mx < this->x+t and my > this->y-t and my < this->y+t){
+        return true;
+    }
+    return false;
 }
 
 Point Point::get_center() {

@@ -1,7 +1,7 @@
 #ifndef POLYGON_HPP
 #define POLYGON_HPP
 
-#include <list>
+#include <vector>
 
 using namespace std;
 
@@ -9,14 +9,14 @@ using namespace std;
 
 class Poly : public Object {
 private:
-    list<Point> verticies;
+    vector<Point> verticies;
     Point center;
 
 public:
 
     Poly(list<Point> points);
 
-    list<Point>& get_verticies();
+    vector<Point>& get_verticies();
     bool is_type(string name) override;
     bool detection(float mx, float my) override;
     Point get_center() override;

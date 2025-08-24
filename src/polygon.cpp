@@ -2,7 +2,7 @@
 
 
 Poly::Poly(list<Point> points) {
-    verticies = points;
+    verticies.insert(verticies.end(), points.begin(), points.end());
 
     float x_sum = 0.0, y_sum = 0.0;
     int num_verticies = (float) verticies.size();
@@ -22,12 +22,35 @@ bool Poly::is_type(string name) {
     return false;
 }
 
-list<Point>& Poly::get_verticies() {
+vector<Point>& Poly::get_verticies() {
+
     return verticies;
 }
 
 bool Poly::detection(float mx, float my) {
-    return true;
+    int cont = 0, n = this->verticies.size();
+
+    for (int i = 0, j = n - 1; i < n; j = i++) {
+        float xi = this->verticies[i].getX();
+        float yi = this->verticies[i].getY();
+        float xj = this->verticies[j].getX();
+        float yj = this->verticies[j].getY();
+
+        if (((yi > my) != (yj > my))) {
+
+            float x_intersection; 
+            if (yj != yi) x_intersection=(xj - xi) * (my - yi) / (yj - yi) + xi;
+            if (mx < x_intersection) {
+                cont++;
+            }
+        }
+    }
+    if (cont%2 == 0){
+        return false;
+    }
+    else{
+        return true;
+    }
 }
 
 Point Poly::get_center() {
@@ -35,7 +58,9 @@ Point Poly::get_center() {
 }
 
 list<Point> Poly::get_points() {
-    return verticies;
+    list<Point> listpoints(verticies.begin(), verticies.end());
+
+    return listpoints;
 }
 
 void Poly::set_points(list<Point> new_points) {
