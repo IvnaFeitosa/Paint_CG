@@ -51,21 +51,21 @@ Object* ObjContainer::search_detection(float mx, float my) {
 
 void ObjContainer::search_for_deletion(Object* obj) {
     for (auto it = points.begin(); it != points.end(); it++) {
-        if (obj == &(*it)) {
+        if (obj->equals(&(*it))) {
             it = points.erase(it);
             return;
         }
     }
-    
+
     for (auto it = lines.begin(); it != lines.end(); it++) {
-        if (obj == &(*it)) {
+        if (obj->equals(&(*it))) {
             it = lines.erase(it);
             return;
         }
     }
 
     for (auto it = polygons.begin(); it != polygons.end(); it++) {
-        if (obj == &(*it)) {
+        if (obj->equals(&(*it))) {
             it = polygons.erase(it);
             return;
         }

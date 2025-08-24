@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <filesystem>
+
 
 #include "line.hpp"
 #include "point.hpp"
@@ -69,12 +69,6 @@ void carregarObjetos2D(){
     std::string pastaDestino = "saves/";
     std::vector <std::string> arquivosDisponiveis;
 
-    //iterando por todos os arquivos existentes na pasta save e adicionando-os a um vetor
-    for (const auto & arquivo : std::filesystem::directory_iterator(pastaDestino)) {
-        if (arquivo.is_regular_file()) {
-            arquivosDisponiveis.push_back(arquivo.path().filename().string());
-        }
-    }
 
     if(arquivosDisponiveis.empty()){
         std::cout << "nenhum arquivo de carregamento disponível\n";

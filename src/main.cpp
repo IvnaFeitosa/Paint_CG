@@ -1,5 +1,5 @@
 #include <GL/freeglut.h>
-#include <filesystem>
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -7,12 +7,11 @@
 #include "saveLoad.hpp"
 #include "transformations.hpp"
 
-
-
 void init(void);
 void display(void);
 void capturarCliqueMouse(int button, int state, int x, int y);
 void capturarTeclaPressionada(unsigned char key, int x, int y);
+void capturarTeclaEspecialPressionada(int key, int x, int y);
 Point get_mouse_point(int mousex, int mousey);
 void capturarMovimentoMouse(int mousex, int mousey);
 
@@ -49,6 +48,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
 
     glutKeyboardFunc(capturarTeclaPressionada);
+    glutSpecialFunc(capturarTeclaEspecialPressionada);
     glutMouseFunc(capturarCliqueMouse);
     glutMotionFunc(capturarMovimentoMouse);
 
@@ -59,32 +59,36 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void capturarTeclaPressionada(unsigned char key, int x, int y){
+void capturarTeclaPressionada(unsigned char key, int x, int y) {
 
     //se não tiver sido selecionado nenhum modo ou um modo for finalizado com enter
     if(modoAtual == nenhum){
 
-        if(key=='1'){
+        if (key == '1'){
             modoAtual = modoCriacaoPonto;
             printf("modo de criacao de ponto ativado");
-        } else if (key=='2') {
+        } else if (key == '2') {
             modoAtual = modoCriacaoLinha;
             printf("modo de criacao de linha ativado \n");
-        } else if (key=='3') {
+        } else if (key == '3') {
             modoAtual = modoCriacaoPoligono;
             printf("modo de criacao de poligono ativado\n");
-        }else if(key == 's'){
+        } else if (key == 's'){
             printf("entrando em modo de salvamento de arquivo \n");
             salvarObjetos2D();
-        }else if(key == 'l'){
+        } else if (key == 'l'){
             printf("entrando em modo de carregamento de arquivo \n");
             carregarObjetos2D();
+        } else if ((key == 127 || key == 8) && selected) { // 127 = Delete, 8 = Backspace
+            obj_container.search_for_deletion(selected);
+            selected = nullptr;
+            glutPostRedisplay();
         }
 
     //se em qualquer modo
     //13 = tecla ENTER
     } else {
-        if (key==13) {
+        if (key == 13) {
             if (modoAtual == modoCriacaoPoligono) {
                 //montando poligono após a criação de todos os seus pontos
                 obj_container.addPoly(Poly(verticesPoly));
@@ -95,6 +99,10 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             modoAtual = nenhum;
         }
     }
+}
+
+void capturarTeclaEspecialPressionada(int key, int x, int y) {
+    
 }
 
 Point get_mouse_point(int mousex, int mousey) {
@@ -131,19 +139,20 @@ void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
             verticesPoly.push_back(mouse_pos);
         } else {
             selected = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
-            printf("Selected\n");
+ 
             if (selected) {
                 dragging = true;
                 startX = mouse_pos.getX();
                 startY = mouse_pos.getY();
+            } else {
+                selected = nullptr;
+                dragging = false;
             }
         }
 
         glutPostRedisplay();
     } else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && dragging) {
         dragging = false;
-        selected = nullptr;
-        printf("Soltei\n");
     }
 }
 
