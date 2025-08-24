@@ -16,6 +16,9 @@ void capturarMovimentoMouse(int mousex, int mousey);
 
 ObjContainer obj_container = ObjContainer();
 
+ObjContainer animation_container = ObjContainer();
+bool is_animation_playing = false;
+
 const int nenhum = 0;
 const int modoCriacaoPonto = 1;
 const int modoCriacaoLinha = 2;
@@ -51,6 +54,61 @@ int main(int argc, char** argv) {
     glutPostRedisplay();
     glutMainLoop();
     return 0;
+}
+
+void init(void) {
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0, 800.0, 0, 600.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+
+void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPointSize(5.0);
+    float r, g, b;
+
+    glBegin(GL_POINTS);
+    for (auto &p : obj_container.get_points()) {
+        p.get_color(r, g, b);
+        glColor3f(r, g, b);
+        glVertex2f(p.getX(), p.getY());
+    }
+    glEnd();
+
+
+    glBegin(GL_LINES);
+    for(auto &linha: obj_container.get_lines()){
+        linha.get_color(r, g, b);
+        glColor3f(r, g, b);
+        glVertex2f(linha.getp1().getX(), linha.getp1().getY());
+        glVertex2f(linha.getp2().getX(), linha.getp2().getY());
+    }
+    glEnd();
+
+
+    glBegin(GL_POINTS);
+    for (auto &p : verticesPoly) {
+        glColor3f(0.0f, 0.0f, 0.0f);
+        glVertex2f(p.getX(), p.getY());
+    }
+    glEnd();
+
+ 
+    for (auto &poly : obj_container.get_polygons()) {
+        poly.get_color(r, g, b);
+        glColor3f(r, g, b);
+        glBegin(GL_POLYGON);
+        for (auto &vertice : poly.get_verticies()) {
+            glVertex2f(vertice.getX(), vertice.getY());
+        }
+        glEnd();
+    }
+
+    glFlush();
+    glutSwapBuffers();
 }
 
 void capturarTeclaPressionada(unsigned char key, int x, int y){
@@ -213,60 +271,4 @@ void capturarMovimentoMouse(int mousex, int mousey) {
 
         glutPostRedisplay();
     }
-}
-
-
-void init(void) {
-    glClearColor(1.0, 1.0, 1.0, 1.0);
-    glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0, 800.0, 0, 600.0);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-
-void display(void) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glPointSize(5.0);
-    float r, g, b;
-
-    glBegin(GL_POINTS);
-    for (auto &p : obj_container.get_points()) {
-        p.get_color(r, g, b);
-        glColor3f(r, g, b);
-        glVertex2f(p.getX(), p.getY());
-    }
-    glEnd();
-
-
-    glBegin(GL_LINES);
-    for(auto &linha: obj_container.get_lines()){
-        linha.get_color(r, g, b);
-        glColor3f(r, g, b);
-        glVertex2f(linha.getp1().getX(), linha.getp1().getY());
-        glVertex2f(linha.getp2().getX(), linha.getp2().getY());
-    }
-    glEnd();
-
-
-    glBegin(GL_POINTS);
-    for (auto &p : verticesPoly) {
-        glColor3f(0.0f, 0.0f, 0.0f);
-        glVertex2f(p.getX(), p.getY());
-    }
-    glEnd();
-
- 
-    for (auto &poly : obj_container.get_polygons()) {
-        poly.get_color(r, g, b);
-        glColor3f(r, g, b);
-        glBegin(GL_POLYGON);
-        for (auto &vertice : poly.get_verticies()) {
-            glVertex2f(vertice.getX(), vertice.getY());
-        }
-        glEnd();
-    }
-
-    glFlush();
-    glutSwapBuffers();
 }
