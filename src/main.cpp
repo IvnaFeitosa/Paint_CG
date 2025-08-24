@@ -74,6 +74,52 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             obj_container.search_for_deletion(objetoSelecionado);
             objetoSelecionado = nullptr;
             glutPostRedisplay();
+        } else {
+            if (objetoSelecionado) {
+                switch(key) {
+                    case 'r': 
+                        Transform::rotate(1, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 't': 
+                        Transform::rotate(-1, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'f': 
+                        Transform::scale(1.1, 1.1, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'g': 
+                        Transform::scale(.9, .9, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'z': 
+                        Transform::reflect(true, false, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'x': 
+                        Transform::reflect(false, true, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'y': 
+                        Transform::shear_x(.5f, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'u': 
+                        Transform::shear_x(-.5f, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'h': 
+                        Transform::shear_y(.5f, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                    case 'j': 
+                        Transform::shear_y(-.5f, objetoSelecionado->get_center());
+                        Transform::aply_transformations(objetoSelecionado);
+                        break;
+                }
+                glutPostRedisplay();
+            }
         }
 
     //se em qualquer modo
@@ -88,83 +134,6 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             printf("retornando ao modo padrao\n");
             modoAtual = nenhum;
         }
-    }
-
-    if(key=='i' && modoAtual==nenhum){
-        float largura = (float)glutGet(GLUT_WINDOW_WIDTH);
-        float altura  = (float)glutGet(GLUT_WINDOW_HEIGHT);
-
-        float x_mundo = ((float)ultimoMouseX/largura)*800.0f;
-        float y_mundo = ((altura-(float)ultimoMouseY)/altura)*600.0f;
-
-        objetoSelecionado = nullptr;
-
-        for (auto &linha : obj_container.get_lines()) {
-            if (linha.detection(x_mundo, y_mundo)) {
-                objetoSelecionado = &linha;
-                printf("Linha selecionada!\n");
-                break;
-            }
-        }
-        if (!objetoSelecionado) {
-            for (auto &poly : obj_container.get_polygons()) {
-                if (poly.detection(x_mundo, y_mundo)) {
-                    objetoSelecionado = &poly;
-                    printf("Polígono selecionado!\n");
-                    break;
-                }
-            }
-        }
-        if (!objetoSelecionado) {
-            for (auto &p : obj_container.get_points()) {
-                if (p.detection(x_mundo, y_mundo)) {
-                    objetoSelecionado = &p;
-                    printf("Ponto selecionado!\n");
-                    break;
-                }
-            }
-        }
-
-        if(!objetoSelecionado){
-            printf("Nenhum objeto sob o mouse\n");
-        }
-    }
-
-    if(objetoSelecionado != nullptr){
-        switch(key){
-            case 'r': 
-                Transform::rotate(1, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 't': 
-                Transform::rotate(-1, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'f': 
-                Transform::scale(1.1, 1.1, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'g': 
-                Transform::scale(.9, .9, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'z': 
-                Transform::reflect(true, false, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'x': 
-                Transform::reflect(false, true, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'h': 
-                Transform::shear_x(1.0f, objetoSelecionado->get_center());
-                Transform::aply_transformations(objetoSelecionado);
-                break;
-            case 'j': 
-                Transform::shear_y(1.0f, objetoSelecionado->get_center());
-                break;
-        }
-        glutPostRedisplay();
     }
 }
 
