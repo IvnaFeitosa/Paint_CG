@@ -11,7 +11,6 @@ void capturarMovimentoMouse(int mousex, int mousey);
 
 ObjContainer obj_container = ObjContainer();
 
-//variáveis de controle de modo
 const int nenhum = 0;
 const int modoCriacaoPonto = 1;
 const int modoCriacaoLinha = 2;
@@ -19,23 +18,18 @@ const int modoCriacaoPoligono = 3;
 
 int modoAtual = nenhum;
 
-// seleção e dragging
 Object* objetoSelecionado = nullptr;
 bool dragging = false;
 float startX, startY;
 
-//variável contadora para 2 cliques esperados de linha
 bool aguardandoPrimeiroClique = false;
 Point primeiroPontoLinha(0, 0);
 
-//vetor para armazenar pontos do poligono durante modo criação
 list<Point> verticesPoly;
 
-// posição do mouse
 int ultimoMouseX = 0, ultimoMouseY = 0;
 
 
-// ---------- FUNÇÕES ----------
 void capturarTeclaPressionada(unsigned char key, int x, int y){
     if(modoAtual == nenhum){
         if(key=='1'){
@@ -49,7 +43,7 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             printf("modo de criacao de poligono ativado\n");
         }
     }else{
-        if(key==13){ // ENTER
+        if(key==13){ 
             if(modoAtual == modoCriacaoPoligono){
                 obj_container.addPoly(Poly(verticesPoly));
                 verticesPoly.clear();
@@ -59,7 +53,6 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         }
     }
 
-    // tecla 'i' -> tentar selecionar objeto
     if(key=='i' && modoAtual==nenhum){
         float largura = (float)glutGet(GLUT_WINDOW_WIDTH);
         float altura  = (float)glutGet(GLUT_WINDOW_HEIGHT);
@@ -100,40 +93,39 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         }
     }
 
-    // TRANSFORMAÇÕES POR TECLA
     if(objetoSelecionado != nullptr){
         switch(key){
-            case 't': // Transladar
+            case 't': 
                 Transform::translade(50, 30);
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Transladação aplicada\n");
                 break;
-            case 'r': // Rotacionar
+            case 'r': 
                 Transform::rotate(45, Point(0,0));
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Rotação aplicada\n");
                 break;
-            case 's': // Escalar
+            case 's': 
                 Transform::scale(2, 2, Point(0,0));
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Escala aplicada\n");
                 break;
-            case 'x': // Reflexão X
+            case 'x': 
                 Transform::reflect(true, false);
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Reflexão em X aplicada\n");
                 break;
-            case 'y': // Reflexão Y
+            case 'y': 
                 Transform::reflect(false, true);
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Reflexão em Y aplicada\n");
                 break;
-            case 'h': // Shear X
+            case 'h': 
                 Transform::shear_x(1.0f, Point(0,0));
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Shear em X aplicado\n");
                 break;
-            case 'v': // Shear Y
+            case 'v': 
                 Transform::shear_y(1.0f, Point(0,0));
                 Transform::aply_transformations(objetoSelecionado);
                 printf("Shear em Y aplicado\n");
@@ -180,7 +172,6 @@ void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
         }else if(modoAtual == modoCriacaoPoligono){
             verticesPoly.push_back(mouse_pos);
         }else{
-            // clique em modo normal: tentar arrastar
             objetoSelecionado = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
             if (objetoSelecionado) {
                 dragging = true;
@@ -230,14 +221,14 @@ void display(void) {
     glColor3f(0.0, 0.0, 0.0);
     glPointSize(5.0);
 
-    // pontos
+
     glBegin(GL_POINTS);
     for (auto &p : obj_container.get_points()) {
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
 
-    // linhas
+
     glBegin(GL_LINES);
     for(auto &linha: obj_container.get_lines()){
         glVertex2f(linha.getp1().getX(), linha.getp1().getY());
@@ -245,14 +236,14 @@ void display(void) {
     }
     glEnd();
 
-    // pontos temporários do polígono
+
     glBegin(GL_POINTS);
     for (auto &p : verticesPoly) {
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
 
-    // polígonos finalizados
+ 
     glColor3f(0.0f, 0.0f, 0.0f);
     for (auto &poly : obj_container.get_polygons()) {
         glBegin(GL_POLYGON);
