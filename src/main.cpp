@@ -1,5 +1,4 @@
 #include <GL/freeglut.h>
-
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -17,7 +16,6 @@ void capturarMovimentoMouse(int mousex, int mousey);
 
 ObjContainer obj_container = ObjContainer();
 
-//veriáveis de controle de modo
 const int nenhum = 0;
 const int modoCriacaoPonto = 1;
 const int modoCriacaoLinha = 2;
@@ -25,16 +23,16 @@ const int modoCriacaoPoligono = 3;
 
 int modoAtual = nenhum;
 
+Object* objetoSelecionado = nullptr;
 bool dragging = false;
-Object* selected = nullptr;
 float startX, startY;
 
-//variável contadora para 2 cliques esperados de linha
 bool aguardandoPrimeiroClique = false;
 Point primeiroPontoLinha(0, 0);
 
-//vetor para armazenar pontos do poligono durante modo criação
 list<Point> verticesPoly;
+
+int ultimoMouseX = 0, ultimoMouseY = 0;
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -46,31 +44,24 @@ int main(int argc, char** argv) {
     init();
 
     glutDisplayFunc(display);
-
     glutKeyboardFunc(capturarTeclaPressionada);
-    glutSpecialFunc(capturarTeclaEspecialPressionada);
     glutMouseFunc(capturarCliqueMouse);
     glutMotionFunc(capturarMovimentoMouse);
 
-    // força redesenho logo que a janela abre
     glutPostRedisplay();
-
     glutMainLoop();
     return 0;
 }
 
-void capturarTeclaPressionada(unsigned char key, int x, int y) {
-
-    //se não tiver sido selecionado nenhum modo ou um modo for finalizado com enter
+void capturarTeclaPressionada(unsigned char key, int x, int y){
     if(modoAtual == nenhum){
-
-        if (key == '1'){
+        if(key=='1'){
             modoAtual = modoCriacaoPonto;
-            printf("modo de criacao de ponto ativado");
-        } else if (key == '2') {
+            printf("modo de criacao de ponto ativado\n");
+        }else if(key=='2'){
             modoAtual = modoCriacaoLinha;
-            printf("modo de criacao de linha ativado \n");
-        } else if (key == '3') {
+            printf("modo de criacao de linha ativado\n");
+        }else if(key=='3'){
             modoAtual = modoCriacaoPoligono;
             printf("modo de criacao de poligono ativado\n");
         } else if (key == 's'){
@@ -79,9 +70,9 @@ void capturarTeclaPressionada(unsigned char key, int x, int y) {
         } else if (key == 'l'){
             printf("entrando em modo de carregamento de arquivo \n");
             carregarObjetos2D();
-        } else if ((key == 127 || key == 8) && selected) { // 127 = Delete, 8 = Backspace
-            obj_container.search_for_deletion(selected);
-            selected = nullptr;
+        } else if ((key == 127 || key == 8) && objetoSelecionado) { // 127 = Delete, 8 = Backspace
+            obj_container.search_for_deletion(objetoSelecionado);
+            objetoSelecionado = nullptr;
             glutPostRedisplay();
         }
 
@@ -92,12 +83,92 @@ void capturarTeclaPressionada(unsigned char key, int x, int y) {
             if (modoAtual == modoCriacaoPoligono) {
                 //montando poligono após a criação de todos os seus pontos
                 obj_container.addPoly(Poly(verticesPoly));
-                //limpando vetor temporário de pontos para o próximo poligono
                 verticesPoly.clear();
             }
-            printf("\nretornando ao modo padrao\n");
+            printf("retornando ao modo padrao\n");
             modoAtual = nenhum;
         }
+    }
+
+    if(key=='i' && modoAtual==nenhum){
+        float largura = (float)glutGet(GLUT_WINDOW_WIDTH);
+        float altura  = (float)glutGet(GLUT_WINDOW_HEIGHT);
+
+        float x_mundo = ((float)ultimoMouseX/largura)*800.0f;
+        float y_mundo = ((altura-(float)ultimoMouseY)/altura)*600.0f;
+
+        objetoSelecionado = nullptr;
+
+        for (auto &linha : obj_container.get_lines()) {
+            if (linha.detection(x_mundo, y_mundo)) {
+                objetoSelecionado = &linha;
+                printf("Linha selecionada!\n");
+                break;
+            }
+        }
+        if (!objetoSelecionado) {
+            for (auto &poly : obj_container.get_polygons()) {
+                if (poly.detection(x_mundo, y_mundo)) {
+                    objetoSelecionado = &poly;
+                    printf("Polígono selecionado!\n");
+                    break;
+                }
+            }
+        }
+        if (!objetoSelecionado) {
+            for (auto &p : obj_container.get_points()) {
+                if (p.detection(x_mundo, y_mundo)) {
+                    objetoSelecionado = &p;
+                    printf("Ponto selecionado!\n");
+                    break;
+                }
+            }
+        }
+
+        if(!objetoSelecionado){
+            printf("Nenhum objeto sob o mouse\n");
+        }
+    }
+
+    if(objetoSelecionado != nullptr){
+        switch(key){
+            case 't': 
+                Transform::translade(50, 30);
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Transladação aplicada\n");
+                break;
+            case 'r': 
+                Transform::rotate(45, Point(0,0));
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Rotação aplicada\n");
+                break;
+            case 's': 
+                Transform::scale(2, 2, Point(0,0));
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Escala aplicada\n");
+                break;
+            case 'x': 
+                Transform::reflect(true, false);
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Reflexão em X aplicada\n");
+                break;
+            case 'y': 
+                Transform::reflect(false, true);
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Reflexão em Y aplicada\n");
+                break;
+            case 'h': 
+                Transform::shear_x(1.0f, Point(0,0));
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Shear em X aplicado\n");
+                break;
+            case 'v': 
+                Transform::shear_y(1.0f, Point(0,0));
+                Transform::aply_transformations(objetoSelecionado);
+                printf("Shear em Y aplicado\n");
+                break;
+        }
+        glutPostRedisplay();
     }
 }
 
@@ -115,58 +186,60 @@ Point get_mouse_point(int mousex, int mousey) {
     return Point(x, y);
 }
 
-void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
-    Point mouse_pos;
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-        mouse_pos = get_mouse_point(mousex, mousey);
 
-        if (modoAtual == modoCriacaoPonto) {
+void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
+    ultimoMouseX = mousex;
+    ultimoMouseY = mousey;
+
+    Point mouse_pos = get_mouse_point(mousex, mousey);
+
+    if(button==GLUT_LEFT_BUTTON && state==GLUT_DOWN){
+        if(modoAtual == modoCriacaoPonto){
             obj_container.addPoint(mouse_pos);
             glutPostRedisplay();
-        } else if(modoAtual == modoCriacaoLinha) {
-            if (aguardandoPrimeiroClique == false) {
+
+        }else if(modoAtual == modoCriacaoLinha){
+            if(!aguardandoPrimeiroClique){
                 primeiroPontoLinha.setX(mouse_pos.getX());
                 primeiroPontoLinha.setY(mouse_pos.getY());
-                aguardandoPrimeiroClique = true; 
-            } else {
+                aguardandoPrimeiroClique = true;
+            }else{
                 Point segundoPonto(mouse_pos.getX(), mouse_pos.getY());
                 Line linha(primeiroPontoLinha, segundoPonto);
                 obj_container.addLine(linha);
-
                 aguardandoPrimeiroClique = false;
             }
-        } else if (modoAtual == modoCriacaoPoligono) {
+        }else if(modoAtual == modoCriacaoPoligono){
             verticesPoly.push_back(mouse_pos);
         } else {
-            selected = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
+            objetoSelecionado = obj_container.search_detection(mouse_pos.getX(), mouse_pos.getY());
  
-            if (selected) {
+            if (objetoSelecionado) {
                 dragging = true;
                 startX = mouse_pos.getX();
                 startY = mouse_pos.getY();
             } else {
-                selected = nullptr;
+                objetoSelecionado = nullptr;
                 dragging = false;
             }
         }
-
         glutPostRedisplay();
     } else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && dragging) {
         dragging = false;
     }
 }
 
+
 void capturarMovimentoMouse(int mousex, int mousey) {
-    if (dragging && selected) {
+    if (dragging && objetoSelecionado) {
         Point mouse_pos = get_mouse_point(mousex, mousey);
 
         float dx = mouse_pos.getX() - startX;
         float dy = mouse_pos.getY() - startY;
 
         Transform::translade(dx, dy);
-        Transform::aply_transformations(selected);
+        Transform::aply_transformations(objetoSelecionado);
 
-        // Atualiza referência pro próximo delta
         startX = mouse_pos.getX();
         startY = mouse_pos.getY();
 
@@ -174,13 +247,14 @@ void capturarMovimentoMouse(int mousex, int mousey) {
     }
 }
 
+
 void init(void) {
-    //definindo cor de fundo como branco
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0, 800.0, 0, 600.0);
     glMatrixMode(GL_MODELVIEW);
 }
+
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -188,7 +262,6 @@ void display(void) {
     glColor3f(0.0, 0.0, 0.0);
     glPointSize(5.0);
 
-    //desenhando pontos criados
     glBegin(GL_POINTS);
     for (auto &p : obj_container.get_points()) {
         glVertex2f(p.getX(), p.getY());
@@ -196,24 +269,23 @@ void display(void) {
     glEnd();
 
 
-    //desenhando linhas criadas
     glBegin(GL_LINES);
-        for(auto &linha: obj_container.get_lines()){
-            glVertex2f(linha.getp1().getX(), linha.getp1().getY());
-            glVertex2f(linha.getp2().getX(), linha.getp2().getY());
-        }
+    for(auto &linha: obj_container.get_lines()){
+        glVertex2f(linha.getp1().getX(), linha.getp1().getY());
+        glVertex2f(linha.getp2().getX(), linha.getp2().getY());
+    }
     glEnd();
 
-    //desenhando pontos do poligono antes de sua finalização
+
     glBegin(GL_POINTS);
     for (auto &p : verticesPoly) {
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
 
-    //desenhando poligonos finalizados
+ 
     glColor3f(0.0f, 0.0f, 0.0f);
-     for (auto &poly : obj_container.get_polygons()) {
+    for (auto &poly : obj_container.get_polygons()) {
         glBegin(GL_POLYGON);
         for (auto &vertice : poly.get_verticies()) {
             glVertex2f(vertice.getX(), vertice.getY());
@@ -222,6 +294,5 @@ void display(void) {
     }
 
     glFlush();
-    //trocando buffers
     glutSwapBuffers();
 }

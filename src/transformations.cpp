@@ -122,15 +122,46 @@ void Transform::shear_y(float shy, Point center) {
 }
 
 void Transform::aply_transformations(Object *obj) {
+    if(obj == nullptr) {
+        printf("Erro: objeto nulo, não é possível aplicar transformações!\n");
+
+        return;
+    }
+
+    // Verifica se há operações antes de tentar multiplicar
+    if(operations.empty()) {
+        printf("Atenção: nenhuma operação a aplicar!\n");
+
+        return;
+    }
+
     while (!operations.empty()) {
-        multiply(operations.front());
+        Operation &op = operations.front();
+        // Checa se a operação está válida
+        bool valid = true;
+        for(int i=0;i<3 && valid;i++){
+            for(int j=0;j<3;j++){
+                if(!isfinite(op[i][j])){
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if(valid){
+            multiply(op);
+        } else {
+              printf("Atenção: operação inválida ignorada!\n");
+        }
         operations.pop_front();
     }
 
     list<Point> points = obj->get_points();
-    aply_to_points(points);
-
-    obj->set_points(points);
+    if(!points.empty()){
+        aply_to_points(points);
+        obj->set_points(points);
+    } else {
+          printf("Atenção: objeto não possui pontos para transformar!\n");
+    }
 
     load_identity();
 }
@@ -146,3 +177,4 @@ void Transform::aply_to_points(list<Point>& points) {
             p.set(i, res[i]);
     }
 }
+
