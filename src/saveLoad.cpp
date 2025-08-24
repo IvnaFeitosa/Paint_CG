@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <filesystem>
 
 #include "line.hpp"
 #include "point.hpp"
@@ -67,119 +66,102 @@ void carregarObjetos2D(){
     //escolha do usuário do arquivo de carregamento
     std::string arquivoEscolhido = "";
     std::string pastaDestino = "saves/";
-    std::vector <std::string> arquivosDisponiveis;
 
-    //iterando por todos os arquivos existentes na pasta save e adicionando-os a um vetor
-    for (const auto & arquivo : std::filesystem::directory_iterator(pastaDestino)) {
-        if (arquivo.is_regular_file()) {
-            arquivosDisponiveis.push_back(arquivo.path().filename().string());
-        }
+    std::string arquivoSelecionado;
+
+    std::cout << "digite o nome de um arquivo da pasta saves que deseja carregar: ";
+    std::cin >> arquivoSelecionado;
+
+    //adicionando extensão .txt ao arquivo em caso de não informado pelo user
+    if (arquivoSelecionado.find(".txt") == std::string::npos){
+        arquivoSelecionado += ".txt";
     }
 
-    if(arquivosDisponiveis.empty()){
-        std::cout << "nenhum arquivo de carregamento disponível\n";
-    }else{
+    arquivoEscolhido = pastaDestino + arquivoSelecionado;
+
+    //abrindo arquivo escolhido pelo usuário
+    std::ifstream arquivo(arquivoEscolhido);
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Arquivo inexistente ou inválido" << arquivoEscolhido << "\n";
+        return;
+    }
+    
+    std::string linha;
+    while (std::getline(arquivo, linha)) {
         
-        //exibindo todos os arquivos de carregamento disponíveos
-        std::cout << "lista de arquivos disponiveis: \n";
-        for(int i=0; i<arquivosDisponiveis.size(); i++){
-            std::cout << i+1 << "." << arquivosDisponiveis[i] << "\n"; 
-        }
+        std::stringstream conteudo(linha);
+        std::string tipo;
 
-        int escolha = 0;
-        std::cout << "escolha o numero referente ao arquivo que deseja carregar: ";
-        std::cin >> escolha;
+        //pegando primeira metade da linha antes do : (linha, ponto, poligono)
+        std::getline(conteudo, tipo, ':');
 
-        if(escolha > arquivosDisponiveis.size() || escolha == 0){
-            std::cout << "escolha invalida\n";
-        }else{
-            arquivoEscolhido = pastaDestino + arquivosDisponiveis[escolha - 1];
-        }
+        if(tipo == "PONTO"){
 
-        //iniciando carregamento das coordenadas do arquivo
-        if(arquivoEscolhido==""){
-            std::cout << "carregamento interrompido \n";
-        }else{
+            //pegando a segunda metade da linha após o :
+            std::string coordenadas;
+            std::getline(conteudo, coordenadas);
 
-            //abrindo arquivo escolhido pelo usuário
-            std::ifstream arquivo(arquivoEscolhido);
+            float coordenadaX;
+            float coordenadaY;
+
+            //obtendo valores
+            sscanf(coordenadas.c_str(), "%f,%f", &coordenadaX, &coordenadaY);
+
+            //remontando e armazenando objeto PONTO com base nas coordenadas obtidas
+            obj_container.addPoint(Point(coordenadaX, coordenadaY));
+
+        }else if(tipo == "LINHA"){
+
+            std::string p1;
+            std::string p2;
+
+            //pegando segunda metade da linha após : que contém coord do ponto 1
+            std::getline(conteudo, p1, ';');
+
+            //pegando terceira metade da linha após ; que contém coord do ponto 2
+            std::getline(conteudo, p2, ';');
+
+            float p1x;
+            float p1y;
+            float p2x;
+            float p2y;
+
+            //obtendo valores
+            sscanf(p1.c_str(), "%f,%f", &p1x, &p1y);
+            sscanf(p2.c_str(), "%f,%f", &p2x, &p2y);
+
+            //remontando e armazenando objeto LINHA com base nas coordenadas obtidas
+            Point ponto1(p1x, p1y);
+            Point ponto2(p2x, p2y);
+            Line linhaObtida(ponto1, ponto2);
+            obj_container.addLine(linhaObtida);
+
+        }else if(tipo == "POLIGONO"){
             
-            std::string linha;
-            while (std::getline(arquivo, linha)) {
-                
-                std::stringstream conteudo(linha);
-                std::string tipo;
+            //string que conterá trecho da linhas entre separadores
+            std::string vertices;
 
-                //pegando primeira metade da linha antes do : (linha, ponto, poligono)
-                std::getline(conteudo, tipo, ':');
+            //vetor de tipo Point para armazenada coordenada tratada
+            std::list<Point> verticesLoad;
 
-                if(tipo == "PONTO"){
+            //enquanto houver conjunto de coordenadas separadas por ;
+            while(std::getline(conteudo, vertices, ';')){
 
-                    //pegando a segunda metade da linha após o :
-                    std::string coordenadas;
-                    std::getline(conteudo, coordenadas);
+                float coordenadax;
+                float coordenaday;
 
-                    float coordenadaX;
-                    float coordenadaY;
+                sscanf(vertices.c_str(), "%f,%f", &coordenadax, &coordenaday);
+                verticesLoad.push_back(Point(coordenadax, coordenaday));
 
-                    //obtendo valores
-                    sscanf(coordenadas.c_str(), "%f,%f", &coordenadaX, &coordenadaY);
-
-                    //remontando e armazenando objeto PONTO com base nas coordenadas obtidas
-                    obj_container.addPoint(Point(coordenadaX, coordenadaY));
-
-                }else if(tipo == "LINHA"){
-
-                    std::string p1;
-                    std::string p2;
-
-                    //pegando segunda metade da linha após : que contém coord do ponto 1
-                    std::getline(conteudo, p1, ';');
-
-                    //pegando terceira metade da linha após ; que contém coord do ponto 2
-                    std::getline(conteudo, p2, ';');
-
-                    float p1x;
-                    float p1y;
-                    float p2x;
-                    float p2y;
-
-                    //obtendo valores
-                    sscanf(p1.c_str(), "%f,%f", &p1x, &p1y);
-                    sscanf(p2.c_str(), "%f,%f", &p2x, &p2y);
-
-                    //remontando e armazenando objeto LINHA com base nas coordenadas obtidas
-                    Point ponto1(p1x, p1y);
-                    Point ponto2(p2x, p2y);
-                    Line linhaObtida(ponto1, ponto2);
-                    obj_container.addLine(linhaObtida);
-
-                }else if(tipo == "POLIGONO"){
-                    
-                    //string que conterá trecho da linhas entre separadores
-                    std::string vertices;
-
-                    //vetor de tipo Point para armazenada coordenada tratada
-                    std::list<Point> verticesLoad;
-
-                    //enquanto houver conjunto de coordenadas separadas por ;
-                    while(std::getline(conteudo, vertices, ';')){
-
-                        float coordenadax;
-                        float coordenaday;
-
-                        sscanf(vertices.c_str(), "%f,%f", &coordenadax, &coordenaday);
-                        verticesLoad.push_back(Point(coordenadax, coordenaday));
-
-                    }
-
-                    //remontando objeto Polygon após obter todos os seus pontos
-                    obj_container.addPoly(Poly(verticesLoad));
-
-                }
             }
 
-            std::cout << "carregamento de: " << arquivoEscolhido << " concluido com sucesso\n";
+            //remontando objeto Polygon após obter todos os seus pontos
+            obj_container.addPoly(Poly(verticesLoad));
+
         }
     }
+
+    std::cout << "carregamento de: " << arquivoEscolhido << " concluido com sucesso\n";
+
 }
