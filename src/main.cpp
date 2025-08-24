@@ -153,7 +153,7 @@ void display(void) {
     glColor3f(0.0f, 0.0f, 0.0f);
      for (auto &poly : obj_container.get_polygons()) {
         glBegin(GL_POLYGON);
-        for (auto &vertice : poly.getVertices()) {
+        for (auto &vertice : poly.get_verticies()) {
             glVertex2f(vertice.getX(), vertice.getY());
         }
         glEnd();

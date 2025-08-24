@@ -2,12 +2,12 @@
 
 
 Poly::Poly(list<Point> points) {
-    vertices = points;
+    verticies = points;
 
     float x_sum = 0.0, y_sum = 0.0;
-    int num_verticies = (float) vertices.size();
+    int num_verticies = (float) verticies.size();
 
-    for (auto it = vertices.begin(); it != vertices.end(); it++) {
+    for (auto it = verticies.begin(); it != verticies.end(); it++) {
         x_sum += it->getX();
         y_sum += it->getY();
     }
@@ -22,8 +22,8 @@ bool Poly::is_type(string name) {
     return false;
 }
 
-list<Point>& Poly::getVertices() {
-    return vertices;
+list<Point>& Poly::get_verticies() {
+    return verticies;
 }
 
 bool Poly::detection(float mx, float my) {
@@ -35,11 +35,11 @@ Point Poly::get_center() {
 }
 
 list<Point> Poly::get_points() {
-    return vertices;
+    return verticies;
 }
 
 void Poly::set_points(list<Point> new_points) {
-    auto it = vertices.begin();
+    auto it = verticies.begin();
     for (Point new_p: new_points) {
         for (int i = 0; i < 3; i++)
             it->set(i, new_p.get(i));

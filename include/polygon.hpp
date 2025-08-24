@@ -9,14 +9,14 @@ using namespace std;
 
 class Poly : public Object {
 private:
-    list<Point> vertices;
+    list<Point> verticies;
     Point center;
 
 public:
 
     Poly(list<Point> points);
 
-    list<Point>& getVertices();
+    list<Point>& get_verticies();
     bool is_type(string name) override;
     bool detection(float mx, float my) override;
     Point get_center() override;
