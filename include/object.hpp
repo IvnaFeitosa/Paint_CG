@@ -31,6 +31,7 @@ public:
     unsigned int get_id();
     void get_color(float &r, float &g, float &b);
     void next_color();
+    void set_color(float r, float g, float b);
     bool equals(Object* obj);
 };
 

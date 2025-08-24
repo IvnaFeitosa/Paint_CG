@@ -137,6 +137,7 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         } else if (key == 'l'){
             printf("entrando em modo de carregamento de arquivo \n");
             carregarObjetos2D(obj_container);
+            glutPostRedisplay();
         } else if ((key == 127 || key == 8) && objetoSelecionado) { // 127 = Delete, 8 = Backspace
             obj_container.search_for_deletion(objetoSelecionado);
             objetoSelecionado = nullptr;

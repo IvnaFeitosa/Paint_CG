@@ -33,6 +33,12 @@ void Object::get_color(float &r, float &g, float &b) {
     r = color[0]; g = color[1]; b = color[2];
 }
 
+void Object::set_color(float r, float g, float b) {
+    color[0] = r; 
+    color[1] = g; 
+    color[2] = b;
+}
+
 void Object::next_color() {
     if (color_id >= colors.size())
         color_id = 0;

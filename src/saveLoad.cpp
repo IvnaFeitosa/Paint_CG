@@ -1,14 +1,10 @@
-#include "saveLoad.hpp"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "saveLoad.hpp"
 #include "line.hpp"
-#include "point.hpp"
 #include "polygon.hpp"
-#include "object.hpp"
-#include "obj_container.hpp"
 
 #define NOME_ARQUIVO "savefile.txt"
 #define PASTA ""
@@ -33,24 +29,29 @@ void salvarObjetos2D(ObjContainer &obj_container) {
     }
 
     //iterando por todos os objetos POINT criados durante a execução atual do programa
+    float r, g, b;
     for (auto &p : obj_container.get_points()) {
-        arquivoSave << "PONTO:" << p.getX() << "," << p.getY() << "\n";
+        p.get_color(r, g, b);
+        arquivoSave << "PONTO:" << r << "," << g << "," << b << ";" << p.getX() << "," << p.getY() << "\n";
     }
 
     //iterando por todos os objetos LINE criados durante a execução atual do programa
     for(auto &linha: obj_container.get_lines()){
-        arquivoSave << "LINHA:" << linha.getp1().getX() << "," << linha.getp1().getY() << ";" << linha.getp2().getX() << "," << linha.getp2().getY() << "\n";
+        linha.get_color(r, g, b);
+        arquivoSave << "LINHA:" 
+                    << r << "," << g << "," << b << ";"
+                    << linha.getp1().getX() << "," << linha.getp1().getY() << ";"
+                    << linha.getp2().getX() << "," << linha.getp2().getY() << "\n";
     }
 
     //itreando por todos os objetos POLYGON criados durante a atual execução do programa
     for (auto &poly : obj_container.get_polygons()){
-
+        poly.get_color(r, g, b);
         arquivoSave << "POLIGONO:";
-
+        arquivoSave << r << "," << g << "," << b;
         for(auto &vertice : poly.get_verticies()){
-            arquivoSave << vertice.getX() << "," << vertice.getY() << ";";
+            arquivoSave << ";" << vertice.getX() << "," << vertice.getY();
         }
-
         arquivoSave << "\n";
     }
 
@@ -92,66 +93,54 @@ void carregarObjetos2D(ObjContainer &obj_container) {
 
         if(tipo == "PONTO"){
 
-            //pegando a segunda metade da linha após o :
-            std::string coordenadas;
-            std::getline(conteudo, coordenadas);
+            std::string dados;
+            std::getline(conteudo, dados);
 
-            float coordenadaX;
-            float coordenadaY;
+            float x, y, r, g, b;
+            sscanf(dados.c_str(), "%f,%f,%f;%f,%f", &r, &g, &b, &x, &y);
 
-            //obtendo valores
-            sscanf(coordenadas.c_str(), "%f,%f", &coordenadaX, &coordenadaY);
-
-            //remontando e armazenando objeto PONTO com base nas coordenadas obtidas
-            obj_container.addPoint(Point(coordenadaX, coordenadaY));
-
+            Point p(x, y);
+            p.set_color(r, g, b);
+            obj_container.addPoint(p);
         }else if(tipo == "LINHA"){
 
-            std::string p1;
-            std::string p2;
-
-            //pegando segunda metade da linha após : que contém coord do ponto 1
+            std::string p1, p2, cor;
+            std::getline(conteudo, cor, ';');
             std::getline(conteudo, p1, ';');
+            std::getline(conteudo, p2);
 
-            //pegando terceira metade da linha após ; que contém coord do ponto 2
-            std::getline(conteudo, p2, ';');
-
-            float p1x;
-            float p1y;
-            float p2x;
-            float p2y;
-
-            //obtendo valores
+            float p1x, p1y, p2x, p2y, r, g, b;
             sscanf(p1.c_str(), "%f,%f", &p1x, &p1y);
             sscanf(p2.c_str(), "%f,%f", &p2x, &p2y);
+            sscanf(cor.c_str(), "%f,%f,%f", &r, &g, &b);
 
-            //remontando e armazenando objeto LINHA com base nas coordenadas obtidas
-            Point ponto1(p1x, p1y);
-            Point ponto2(p2x, p2y);
-            Line linhaObtida(ponto1, ponto2);
-            obj_container.addLine(linhaObtida);
+            Line l(Point(p1x, p1y), Point(p2x, p2y));
+            l.set_color(r, g, b);
+            obj_container.addLine(l);
 
         }else if(tipo == "POLIGONO"){
             
-            //string que conterá trecho da linhas entre separadores
-            std::string vertices;
+            std::string dados;
+            std::getline(conteudo, dados);
 
-            //vetor de tipo Point para armazenada coordenada tratada
-            std::list<Point> verticesLoad;
+            std::stringstream ss(dados);
+            std::string parte;
 
-            //enquanto houver conjunto de coordenadas separadas por ;
-            while(std::getline(conteudo, vertices, ';')){
+            std::getline(ss, parte, ';');
+            float r, g, b;
+            sscanf(parte.c_str(), "%f,%f,%f", &r, &g, &b);
 
-                float coordenadax;
-                float coordenaday;
-
-                sscanf(vertices.c_str(), "%f,%f", &coordenadax, &coordenaday);
-                verticesLoad.push_back(Point(coordenadax, coordenaday));
-
+            std::list<Point> verts;
+            while (std::getline(ss, parte, ';')) {
+                float x, y;
+                if (sscanf(parte.c_str(), "%f,%f", &x, &y) == 2) {
+                    verts.push_back(Point(x, y));
+                }
             }
 
-            //remontando objeto Polygon após obter todos os seus pontos
-            obj_container.addPoly(Poly(verticesLoad));
+            Poly poly(verts);
+            poly.set_color(r, g, b);
+            obj_container.addPoly(poly);
 
         }
     }
