@@ -3,6 +3,8 @@
 #include "polygon.hpp"
 #include "line.hpp"
 
+#define M_PI 3.14159265358979323846
+
 Operation Transform::matrix = {{
     {1, 0, 0},
     {0, 1, 0},

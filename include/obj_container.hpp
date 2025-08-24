@@ -24,6 +24,7 @@ public:
     list<Poly>& get_polygons();
 
     Object* search_detection(float mx, float my);
+    void search_for_deletion(Object* obj);
 };
 
 #endif

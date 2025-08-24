@@ -31,23 +31,43 @@ list<Poly>& ObjContainer::get_polygons() {
 }
 
 Object* ObjContainer::search_detection(float mx, float my) {
-
+    for (auto it = points.begin(); it != points.end(); it++) {
+        if (it->detection(mx, my))
+        return &(*it);
+    }
+    
     for (auto it = lines.begin(); it != lines.end(); it++) {
         if (it->detection(mx, my))
             return &(*it);
     }
-
-    for (auto it = points.begin(); it != points.end(); it++) {
-        if (it->detection(mx, my))
-            return &(*it);
-    }
-
     
-
     for (auto it = polygons.begin(); it != polygons.end(); it++) {
         if (it->detection(mx, my))
             return &(*it);
     }
 
     return nullptr;
+}
+
+void ObjContainer::search_for_deletion(Object* obj) {
+    for (auto it = points.begin(); it != points.end(); it++) {
+        if (obj == &(*it)) {
+            it = points.erase(it);
+            return;
+        }
+    }
+    
+    for (auto it = lines.begin(); it != lines.end(); it++) {
+        if (obj == &(*it)) {
+            it = lines.erase(it);
+            return;
+        }
+    }
+
+    for (auto it = polygons.begin(); it != polygons.end(); it++) {
+        if (obj == &(*it)) {
+            it = polygons.erase(it);
+            return;
+        }
+    }
 }

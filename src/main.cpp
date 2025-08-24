@@ -1,13 +1,13 @@
 #include <GL/freeglut.h>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
 #include "obj_container.hpp"
 #include "saveLoad.hpp"
-
-#include <iostream>
-#include <fstream>
-#include <string>
-
-#include <filesystem>
 #include "transformations.hpp"
+
+
 
 void init(void);
 void display(void);
