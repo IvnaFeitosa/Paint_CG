@@ -31,17 +31,17 @@ list<Poly>& ObjContainer::get_polygons() {
 }
 
 Object* ObjContainer::search_detection(float mx, float my) {
-    for (auto it = points.begin(); it != points.end(); it++) {
+    for (auto it = points.rbegin(); it != points.rend(); it++) {
         if (it->detection(mx, my))
         return &(*it);
     }
     
-    for (auto it = lines.begin(); it != lines.end(); it++) {
+    for (auto it = lines.rbegin(); it != lines.rend(); it++) {
         if (it->detection(mx, my))
             return &(*it);
     }
     
-    for (auto it = polygons.begin(); it != polygons.end(); it++) {
+    for (auto it = polygons.rbegin(); it != polygons.rend(); it++) {
         if (it->detection(mx, my))
             return &(*it);
     }
