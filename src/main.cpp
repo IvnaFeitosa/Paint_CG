@@ -18,7 +18,6 @@ void animation_pacman(int value);
 
 ObjContainer obj_container = ObjContainer();
 
-ObjContainer animation_container = ObjContainer();
 bool is_animation_playing = false;
 
 const int nenhum = 0;
