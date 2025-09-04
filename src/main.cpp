@@ -12,7 +12,6 @@ void init(void);
 void display(void);
 void capturarCliqueMouse(int button, int state, int x, int y);
 void capturarTeclaPressionada(unsigned char key, int x, int y);
-void capturarTeclaEspecialPressionada(int key, int x, int y);
 Point get_mouse_point(int mousex, int mousey);
 void capturarMovimentoMouse(int mousex, int mousey);
 void animation_pacman(int value);
@@ -64,6 +63,8 @@ void init(void) {
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0, 800.0, 0, 600.0);
     glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -81,7 +82,10 @@ void display(void) {
     glBegin(GL_POINTS);
     for (auto &p : draw_container->get_points()) {
         p.get_color(r, g, b);
-        glColor3f(r, g, b);
+        if (objetoSelecionado && objetoSelecionado->equals(&p))
+            glColor4f(r, g, b, .6);
+        else
+            glColor3f(r, g, b);
         glVertex2f(p.getX(), p.getY());
     }
     glEnd();
@@ -90,7 +94,10 @@ void display(void) {
     glBegin(GL_LINES);
     for(auto &linha: draw_container->get_lines()){
         linha.get_color(r, g, b);
-        glColor3f(r, g, b);
+        if (objetoSelecionado && objetoSelecionado->equals(&linha))
+            glColor4f(r, g, b, .6);
+        else
+            glColor3f(r, g, b);
         glVertex2f(linha.getp1().getX(), linha.getp1().getY());
         glVertex2f(linha.getp2().getX(), linha.getp2().getY());
     }
@@ -107,8 +114,11 @@ void display(void) {
  
     for (auto &poly : draw_container->get_polygons()) {
         poly.get_color(r, g, b);
-        glColor3f(r, g, b);
-        glBegin(GL_POLYGON);
+        if (objetoSelecionado && objetoSelecionado->equals(&poly))
+            glColor4f(r, g, b, .6);
+        else
+            glColor3f(r, g, b);
+        glBegin(GL_LINE_LOOP);
         for (auto &vertice : poly.get_verticies()) {
             glVertex2f(vertice.getX(), vertice.getY());
         }
@@ -147,24 +157,13 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             is_animation_playing = true;
             animation_pacman(0);
             
-        } else if (key == 'c') {
-            if (objetoSelecionado) {
-              
+        } else if (key == 'c' && objetoSelecionado) {
                 Poly* polySelecionado = dynamic_cast<Poly*>(objetoSelecionado);
-                if (polySelecionado) {
-       
-                    std::vector<Point> vertices = polySelecionado->get_verticies();
-
-     
-                    std::vector<Point> hull = divideAndConquerHull(vertices);
-
-    
-                    polySelecionado->set_vertices(hull);
-
-                    glutPostRedisplay();
-                }
-            }
-        }else {
+                std::vector<Point> vertices = polySelecionado->get_verticies();
+                std::vector<Point> hull = divideAndConquerHull(vertices);
+                polySelecionado->set_vertices(hull);
+                glutPostRedisplay();
+        } else {
             if (objetoSelecionado) {
                 switch(key) {
                     case 'r': 
@@ -228,10 +227,6 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             modoAtual = nenhum;
         }
     }
-}
-
-void capturarTeclaEspecialPressionada(int key, int x, int y) {
-    
 }
 
 Point get_mouse_point(int mousex, int mousey) {

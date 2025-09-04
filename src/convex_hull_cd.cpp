@@ -60,8 +60,8 @@ vector<Point> divideAndConquerHull(vector<Point> points) {
     sort(points.begin(), points.end(), [](const Point &a, const Point &b){ return a.getX() < b.getX(); });
 
     int mid = points.size()/2;
-    vector<Point> left(points.begin(), points.begin()+mid);
-    vector<Point> right(points.begin()+mid, points.end());
+    vector<Point> left(points.begin(), points.begin() + mid);
+    vector<Point> right(points.begin() + mid, points.end());
 
     vector<Point> leftHull = divideAndConquerHull(left);
     vector<Point> rightHull = divideAndConquerHull(right);
