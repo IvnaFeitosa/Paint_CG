@@ -6,6 +6,7 @@
 #include "saveLoad.hpp"
 #include "transformations.hpp"
 #include "animation.hpp"
+#include "convex_hull_dc.hpp"
 
 void init(void);
 void display(void);
@@ -145,7 +146,25 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         } else if (key == 'a') {
             is_animation_playing = true;
             animation_pacman(0);
-        } else {
+            
+        } else if (key == 'c') {
+            if (objetoSelecionado) {
+              
+                Poly* polySelecionado = dynamic_cast<Poly*>(objetoSelecionado);
+                if (polySelecionado) {
+       
+                    std::vector<Point> vertices = polySelecionado->get_verticies();
+
+     
+                    std::vector<Point> hull = divideAndConquerHull(vertices);
+
+    
+                    polySelecionado->set_vertices(hull);
+
+                    glutPostRedisplay();
+                }
+            }
+        }else {
             if (objetoSelecionado) {
                 switch(key) {
                     case 'r': 

@@ -22,6 +22,7 @@ public:
     Point get_center() override;
     list<Point> get_points() override;
     void set_points(list<Point> new_points) override;
+    void set_vertices(const vector<Point>& novosVertices);
 };
 
 #endif

@@ -10,6 +10,9 @@ private:
     float h;
 
 public:
+
+    float getX() const { return x; }  
+    float getY() const { return y; } 
     Point();
     Point(float n_x, float n_y);
 
