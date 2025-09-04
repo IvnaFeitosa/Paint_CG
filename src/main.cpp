@@ -24,6 +24,7 @@ const int nenhum = 0;
 const int modoCriacaoPonto = 1;
 const int modoCriacaoLinha = 2;
 const int modoCriacaoPoligono = 3;
+const int modoCriacaoPoligonoLinha = 4;
 
 int modoAtual = nenhum;
 
@@ -117,7 +118,10 @@ void display(void) {
             glColor4f(r, g, b, .6);
         else
             glColor3f(r, g, b);
-        glBegin(GL_LINE_LOOP);
+        if (poly.is_fill())
+            glBegin(GL_POLYGON);
+        else
+            glBegin(GL_LINE_LOOP);
         for (auto &vertice : poly.get_verticies()) {
             glVertex2f(vertice.getX(), vertice.getY());
         }
@@ -132,15 +136,18 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
     if (is_animation_playing) return;
 
     if (modoAtual == nenhum){
-        if(key=='1'){
+        if (key == '1') {
             modoAtual = modoCriacaoPonto;
             printf("modo de criacao de ponto ativado\n");
-        }else if(key=='2'){
+        }else if (key == '2'){
             modoAtual = modoCriacaoLinha;
             printf("modo de criacao de linha ativado\n");
-        }else if(key=='3'){
+        }else if (key == '3'){
             modoAtual = modoCriacaoPoligono;
-            printf("modo de criacao de poligono ativado\n");
+            printf("modo de criacao de poligono preenchido ativado\n");
+        } else if (key == '4') {
+            modoAtual = modoCriacaoPoligonoLinha;
+            printf("modo de criacao de poligono de linha\n");
         } else if (key == 's'){
             printf("entrando em modo de salvamento de arquivo \n");
             salvarObjetos2D(obj_container);
@@ -157,11 +164,11 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
             animation_pacman(0);
             
         } else if (key == 'c' && objetoSelecionado) {
-                Poly* polySelecionado = dynamic_cast<Poly*>(objetoSelecionado);
-                std::vector<Point> vertices = polySelecionado->get_verticies();
-                std::vector<Point> hull = divideAndConquerHull(vertices);
-                polySelecionado->set_vertices(hull);
-                glutPostRedisplay();
+            Poly* polySelecionado = dynamic_cast<Poly*>(objetoSelecionado);
+            std::vector<Point> vertices = polySelecionado->get_verticies();
+            std::vector<Point> hull = divideAndConquerHull(vertices);
+            polySelecionado->set_vertices(hull);
+            glutPostRedisplay();
         } else {
             if (objetoSelecionado) {
                 switch(key) {
@@ -216,9 +223,10 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
     //13 = tecla ENTER
     } else {
         if (key == 13) {
-            if (modoAtual == modoCriacaoPoligono) {
+            if (modoAtual == modoCriacaoPoligono || modoAtual == modoCriacaoPoligonoLinha) {
                 //montando poligono após a criação de todos os seus pontos
-                obj_container.addPoly(Poly(verticesPoly));
+                bool fill = modoAtual == modoCriacaoPoligono;
+                obj_container.addPoly(Poly(verticesPoly, fill));
                 glutPostRedisplay();
                 verticesPoly.clear();
             }
@@ -262,7 +270,7 @@ void capturarCliqueMouse(int button, int state, int mousex, int mousey) {
                 obj_container.addLine(linha);
                 aguardandoPrimeiroClique = false;
             }
-        }else if(modoAtual == modoCriacaoPoligono){
+        }else if(modoAtual == modoCriacaoPoligono || modoAtual == modoCriacaoPoligonoLinha){
             verticesPoly.push_back(mouse_pos);
         } else {
 
