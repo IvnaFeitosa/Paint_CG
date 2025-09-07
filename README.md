@@ -54,6 +54,7 @@ cd Paint_CG
 ```
 
 Crie um executável do paint no diretório `/bin`:
+
 No Linux:
 ```bash
 g++ -std=c++17 src/*.cpp -Iinclude -o bin/paint -lGL -lGLU -lglut
