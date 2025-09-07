@@ -2,6 +2,7 @@
 
 
 Poly::Poly(list<Point> points) {
+    this->fill = true;
     verticies.insert(verticies.end(), points.begin(), points.end());
 
     float x_sum = 0.0, y_sum = 0.0;
@@ -14,6 +15,10 @@ Poly::Poly(list<Point> points) {
 
     center.setX(x_sum / num_verticies);
     center.setY(y_sum / num_verticies);
+}
+
+Poly::Poly(list<Point> points, bool fill) : Poly(points) {
+    this->fill = fill;
 }
 
 bool Poly::is_type(string name) {
@@ -76,3 +81,22 @@ void Poly::set_points(list<Point> new_points) {
     center.setY(y_sum / verticies.size());
 }
 
+
+void Poly::set_vertices(const std::vector<Point>& novosVertices) {
+    verticies = novosVertices;
+
+    // Recalcula o centro do polígono
+    float x_sum = 0.0f, y_sum = 0.0f;
+    for (const auto& p : verticies) {
+        x_sum += p.getX();
+        y_sum += p.getY();
+    }
+    if (!verticies.empty()) {
+        center.setX(x_sum / verticies.size());
+        center.setY(y_sum / verticies.size());
+    }
+}
+
+bool Poly::is_fill() {
+    return this->fill;
+}
