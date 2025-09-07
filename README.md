@@ -53,9 +53,14 @@ Após abrir o projeto certifique-se de estar dentro da pasta:
 cd Paint_CG
 ```
 
-Crie um executável paint no diretório raiz:
+Crie um executável do paint no diretório `/bin`:
+No Linux:
 ```bash
-g++ src/*.cpp -Iinclude -lGL -lGLU -lglut -o paint
+g++ src/*.cpp -Iinclude -o bin/programa -lGL -lGLU -lglut -o paint
+```
+No Windows:
+```bash
+g++ -std=c++17 src/*.cpp -Iinclude -o bin/programa -lfreeglut -lopengl32 -lglu32
 ```
 ▶️ Para executar o projeto:
 ```bash
