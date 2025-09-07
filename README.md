@@ -11,7 +11,7 @@ Esse sistema consiste em um **Editor Gráfico em C++ com OpenGL/GLUT**, baseado 
 - **Linhas** → definidas por dois pontos  
 - **Polígonos** → lista circular de vértices com fechamento automático  
 
-### 🔹 Transformação de poligono côncado em convéxo
+### 🔹 Transformação de poligono côncado em convexo
 - Utilização do algorítmo de **Divisão e conquista** para transformar qualquer poligono côncavo desenhado em convexo, após selecionado e acinodo o comando (Tecla c).
 
 ### 🔹 Transformações Geométricas (Matrizes 3x3)  
