@@ -56,15 +56,15 @@ cd Paint_CG
 Crie um executável do paint no diretório `/bin`:
 No Linux:
 ```bash
-g++ src/*.cpp -Iinclude -o bin/programa -lGL -lGLU -lglut -o paint
+g++ -std=c++17 src/*.cpp -Iinclude -o bin/paint -lGL -lGLU -lglut
 ```
 No Windows:
 ```bash
-g++ -std=c++17 src/*.cpp -Iinclude -o bin/programa -lfreeglut -lopengl32 -lglu32
+g++ -std=c++17 src/*.cpp -Iinclude -o bin/paint -lfreeglut -lopengl32 -lglu32
 ```
 ▶️ Para executar o projeto:
 ```bash
-./paint
+./bin/paint
 ```
 ## 💾 Persistência de Dados
 
