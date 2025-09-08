@@ -48,7 +48,14 @@ void salvarObjetos2D(ObjContainer &obj_container) {
     for (auto &poly : obj_container.get_polygons()){
         poly.get_color(r, g, b);
         arquivoSave << "POLIGONO:";
-        arquivoSave << r << "," << g << "," << b;
+        arquivoSave << r << "," << g << "," << b << ";";
+
+        if (poly.is_fill() == true){
+            arquivoSave << "FILL";
+        }else{
+            arquivoSave << "NOT_FILL";
+        }
+            
         for(auto &vertice : poly.get_verticies()){
             arquivoSave << ";" << vertice.getX() << "," << vertice.getY();
         }
@@ -130,6 +137,15 @@ void carregarObjetos2D(ObjContainer &obj_container) {
             float r, g, b;
             sscanf(parte.c_str(), "%f,%f,%f", &r, &g, &b);
 
+            bool fill;
+            std::getline(ss, parte, ';');
+
+            if(parte == "FILL"){
+                fill = true;
+            }else if(parte == "NOT_FILL"){
+                fill = false;
+            }
+
             std::list<Point> verts;
             while (std::getline(ss, parte, ';')) {
                 float x, y;
@@ -138,7 +154,7 @@ void carregarObjetos2D(ObjContainer &obj_container) {
                 }
             }
 
-            Poly poly(verts);
+            Poly poly(verts, fill);
             poly.set_color(r, g, b);
             obj_container.addPoly(poly);
 
