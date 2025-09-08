@@ -19,6 +19,8 @@ public:
     void addLine(Line l);
     void addPoly(Poly poly);
 
+    void clear();
+
     list<Point>& get_points();
     list<Line>& get_lines();
     list<Poly>& get_polygons();
