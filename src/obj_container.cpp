@@ -6,6 +6,12 @@ ObjContainer::ObjContainer() {
     this->lines.clear();
 }
 
+void ObjContainer::clear() {
+    this->points.clear();
+    this->lines.clear();
+    this->polygons.clear();
+}
+
 void ObjContainer::addPoint(Point p) {
     this->points.push_back(p);
 }
