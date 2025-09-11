@@ -157,8 +157,7 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         } else if (key == 'a') {
             is_animation_playing = true;
             animation_pacman(0);
-            
-        } else if (key == 'c' && objetoSelecionado) {
+        } else if (key == 'c' && objetoSelecionado && objetoSelecionado->is_type("Poly")) {
             Poly* polySelecionado = dynamic_cast<Poly*>(objetoSelecionado);
             std::vector<Point> vertices = polySelecionado->get_verticies();
             std::vector<Point> hull = divideAndConquerHull(vertices);
@@ -220,8 +219,10 @@ void capturarTeclaPressionada(unsigned char key, int x, int y){
         if (key == 13) {
             if (modoAtual == modoCriacaoPoligono || modoAtual == modoCriacaoPoligonoLinha) {
                 //montando poligono após a criação de todos os seus pontos
-                bool fill = modoAtual == modoCriacaoPoligono;
-                obj_container.addPoly(Poly(verticesPoly, fill));
+                if (verticesPoly.size() >= 3) {
+                    bool fill = modoAtual == modoCriacaoPoligono;
+                    obj_container.addPoly(Poly(verticesPoly, fill));
+                }
                 glutPostRedisplay();
                 verticesPoly.clear();
             }
