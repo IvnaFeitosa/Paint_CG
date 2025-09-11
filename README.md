@@ -87,7 +87,8 @@ g++ -std=c++17 src/*.cpp -Iinclude -o bin/paint -lfreeglut -lopengl32 -lglu32
 |---------|----------------|
 | `1`     | Modo Ponto     |
 | `2`     | Modo Linha     |
-| `3`     | Modo Polígono  |
+| `3`     | Modo Polígono Preenchido  |
+| `4`     | Modo Polígono Não Preenchido  |
 | `Enter` | Fechar Polígono |
 
 ---
