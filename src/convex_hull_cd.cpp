@@ -54,17 +54,20 @@ vector<Point> mergeHulls(const vector<Point> &left, const vector<Point> &right) 
     return newHull;
 }
 
-vector<Point> divideAndConquerHull(vector<Point> points) {
+vector<Point> aux_divideAndConquerHull(vector<Point> points) {
     if(points.size() <= 1) return points;
-
-    sort(points.begin(), points.end(), [](const Point &a, const Point &b){ return a.getX() < b.getX(); });
 
     int mid = points.size()/2;
     vector<Point> left(points.begin(), points.begin() + mid);
     vector<Point> right(points.begin() + mid, points.end());
 
-    vector<Point> leftHull = divideAndConquerHull(left);
-    vector<Point> rightHull = divideAndConquerHull(right);
+    vector<Point> leftHull = aux_divideAndConquerHull(left);
+    vector<Point> rightHull = aux_divideAndConquerHull(right);
 
     return mergeHulls(leftHull, rightHull);
+}
+
+vector<Point> divideAndConquerHull(vector<Point> points) {
+    sort(points.begin(), points.end(), [](const Point &a, const Point &b){ return a.getX() < b.getX(); });
+    return aux_divideAndConquerHull(points);
 }
